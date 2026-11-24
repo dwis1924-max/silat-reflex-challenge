@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100e17">
+  <meta name="description" content="Mini-game refleks pencak silat. Baca gerakan lawan dan bertahan selama 30 detik.">
+  <title>Silat Reflex Challenge</title>
+  <link rel="icon" href="assets/emblem.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand"><img src="assets/emblem.svg" width="32" height="32" alt=""><span>GELANGGANG <b>REFLEKS</b></span></div>
+      <button id="sound" class="small-button" type="button" aria-pressed="true" aria-label="Suara"><span id="sound-icon" aria-hidden="true">♪</span><span id="sound-text" aria-hidden="true">SUARA AKTIF</span></button>
+    </header>
+
+    <main id="stage" class="stage" data-screen="menu">
+      <canvas id="arena" width="480" height="270" aria-label="Gelanggang pencak silat dengan pesilat biru dan merah">Game ini memerlukan browser yang mendukung Canvas.</canvas>
+
+      <section id="menu" class="menu" aria-labelledby="title">
+        <div class="menu-inner">
+          <p class="eyebrow"><span></span> PENCAK SILAT ARCADE</p>
+          <h1 id="title"><strong>SILAT</strong><br>REFLEX<br><em>CHALLENGE</em></h1>
+          <p class="intro">Baca gerakan lawan. Bertahan selama 30 detik.</p>
+          <div class="field">
+            <span id="difficulty-label" class="label">Difficulty</span>
+            <div class="difficulty" role="group" aria-labelledby="difficulty-label">
+              <button type="button" data-level="easy" aria-pressed="false">Easy</button>
+              <button type="button" data-level="normal" aria-pressed="true">Normal</button>
+              <button type="button" data-level="hard" aria-pressed="false">Hard</button>
+            </div>
+          </div>
+          <button id="play" class="primary play" type="button"><span aria-hidden="true">▶</span> Play Game</button>
+          <div class="menu-foot">
+            <button id="help-open" class="link-button" type="button">How to Play</button>
+            <div class="record"><span>HIGH SCORE</span> <strong id="menu-best">000</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <div id="match" class="match" hidden>
+        <div class="hud">
+          <div class="health"><div class="health-label"><span>PESILAT A</span><strong id="hp-value">100 HP</strong></div><div id="hp-track" class="health-track" role="meter" aria-label="HP pesilat" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="hp-fill"></div></div></div>
+          <div class="timer"><span>WAKTU</span><strong id="time">30</strong></div>
+          <div class="score"><span>SKOR</span><strong id="score">000</strong></div>
+          <button id="pause" class="small-button pause" type="button" aria-label="Jeda permainan" title="Jeda (Esc)"><span aria-hidden="true">Ⅱ</span></button>
+        </div>
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+        <div class="controls" role="group" aria-label="Kontrol pertahanan">
+          <button class="action guard" type="button" data-action="guard"><span aria-hidden="true">⛨</span><b>TANGKIS</b><kbd>A</kbd></button>
+          <button class="action dodge" type="button" data-action="dodge"><span aria-hidden="true">«</span><b>HINDAR</b><kbd>S</kbd></button>
+          <button class="action jump" type="button" data-action="jump"><span aria-hidden="true">⌃</span><b>LOMPAT</b><kbd>D</kbd></button>
+        </div>
+      </div>
+
+      <section id="pause-panel" class="overlay" aria-labelledby="pause-title" hidden>
+        <div class="panel pause-panel">
+          <p class="eyebrow">PERTANDINGAN</p><h2 id="pause-title">Dijeda</h2>
+          <div class="panel-buttons"><button id="resume" class="primary" type="button">Lanjutkan</button><button id="quit" class="secondary" type="button">Main Menu</button></div>
+        </div>
+      </section>
+
+      <section id="results" class="overlay" aria-labelledby="result-title" hidden>
+        <div class="panel results-panel">
+          <p id="result-level" class="eyebrow">NORMAL</p>
+          <h2 id="result-title">Waktu Habis</h2>
+          <div class="final-score"><span>SKOR AKHIR</span><strong id="result-score">000</strong></div>
+          <dl class="results-grid">
+            <div><dt>Akurasi</dt><dd id="result-accuracy"></dd></div>
+            <div><dt>Rata-rata respons</dt><dd id="result-reaction"></dd></div>
+            <div><dt>Sisa HP</dt><dd id="result-hp"></dd></div>
+            <div><dt>High Score</dt><dd id="result-best"></dd></div>
+          </dl>
+          <p id="result-count" class="result-count"></p>
+          <div class="panel-buttons"><button id="again" class="primary" type="button">Play Again</button><button id="back" class="secondary" type="button">Main Menu</button></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span class="portrait-hint">Putar layar untuk arena yang lebih lebar.</span>
+      <span class="desktop-hint"><kbd>A</kbd> Tangkis <kbd>S</kbd> Hindar <kbd>D</kbd> Lompat</span>
+      <span class="footer-mode">SOLO · 30 DETIK</span>
+    </footer>
+  </div>
+
+  <dialog id="help" aria-labelledby="help-title">
+    <div class="panel help-panel">
+      <p class="eyebrow">PANDUAN BERMAIN</p>
+      <h2 id="help-title">How to Play</h2>
+      <p>Perhatikan kuda-kuda pesilat merah. Pilih satu pertahanan saat lawan mulai bergerak, sebelum benturan.</p>
+      <table>
+        <thead><tr><th>Serangan</th><th>Pertahanan</th><th>Tombol</th></tr></thead>
+        <tbody><tr><td>Pukulan</td><td>Tangkis</td><td><kbd>A</kbd></td></tr><tr><td>Tendangan</td><td>Hindar</td><td><kbd>S</kbd></td></tr><tr><td>Sapuan</td><td>Lompat</td><td><kbd>D</kbd></td></tr></tbody>
+      </table>
+      <p>Berhasil memberi 10 poin. Setiap benturan mengurangi 20 HP. Jeda dengan Esc atau tombol di arena.</p>
+      <button id="help-close" class="primary" type="button">Siap</button>
+    </div>
+  </dialog>
+</body>
+</html>
+
